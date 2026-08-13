@@ -128,6 +128,7 @@ func (m *Manager) startProcess(proc *Process) error {
 	if err := cmd.Start(); err != nil {
 		proc.SetStatus(types.StatusFailed)
 		proc.SetLastError(err.Error())
+		proc.SetCmd(nil)
 		logger.Errorf("Failed to start process %s: %v", proc.Name(), err)
 		return fmt.Errorf("failed to start process: %w", err)
 	}
@@ -271,6 +272,9 @@ func (m *Manager) RunningCount() int {
 
 func (m *Manager) getPid(proc *Process) int {
 	cmd := proc.Cmd()
+	if cmd == nil || cmd.Process == nil {
+		return 0
+	}
 	return cmd.Process.Pid
 }
 
